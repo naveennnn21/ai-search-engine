@@ -5,7 +5,16 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.services.exceptions import UploadError
+from app.services.exceptions import (
+    DocumentChunkingError,
+    DocumentProcessingError,
+    EmbeddingError,
+    LlmError,
+    RagError,
+    RetrievalError,
+    UploadError,
+    VectorStoreError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +23,68 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(UploadError)
     async def upload_error_handler(_: Request, exc: UploadError) -> JSONResponse:
         logger.warning("Upload rejected: %s", exc.message)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(DocumentProcessingError)
+    async def document_processing_error_handler(
+        _: Request,
+        exc: DocumentProcessingError,
+    ) -> JSONResponse:
+        logger.warning("Document processing failed: %s", exc.message)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(DocumentChunkingError)
+    async def document_chunking_error_handler(
+        _: Request,
+        exc: DocumentChunkingError,
+    ) -> JSONResponse:
+        logger.warning("Document chunking failed: %s", exc.message)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(EmbeddingError)
+    async def embedding_error_handler(_: Request, exc: EmbeddingError) -> JSONResponse:
+        logger.warning("Embedding generation failed: %s", exc.message)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(VectorStoreError)
+    async def vector_store_error_handler(_: Request, exc: VectorStoreError) -> JSONResponse:
+        logger.warning("Vector store operation failed: %s", exc.message)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(RetrievalError)
+    async def retrieval_error_handler(_: Request, exc: RetrievalError) -> JSONResponse:
+        logger.warning("Retrieval failed: %s", exc.message)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(LlmError)
+    async def llm_error_handler(_: Request, exc: LlmError) -> JSONResponse:
+        logger.warning("LLM operation failed: %s", exc.message)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(RagError)
+    async def rag_error_handler(_: Request, exc: RagError) -> JSONResponse:
+        logger.warning("RAG operation failed: %s", exc.message)
         return JSONResponse(
             status_code=exc.status_code,
             content={"error": {"code": exc.code, "message": exc.message}},
